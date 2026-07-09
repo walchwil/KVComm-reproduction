@@ -2,6 +2,7 @@ from .base_evaluator import BaseEvaluator
 from .medqa_utils import build_medqa_prompts
 from datasets import load_dataset
 import os
+import sys
 
 
 class MedQAEvaluator(BaseEvaluator):
@@ -34,10 +35,13 @@ class MedQAEvaluator(BaseEvaluator):
                 "Cannot find medqa.json. Expected one of:\n" + "\n".join(candidates)
             )
 
+        print(f"[MedQA] Loading {dataset_path}", file=sys.stderr, flush=True)
         dataset = load_dataset("json", data_files=dataset_path, split="train")
-        dataset = dataset.map(build_medqa_prompts)
+        print(f"[MedQA] Loaded {len(dataset)} rows; cleaning prompts...", file=sys.stderr, flush=True)
+        dataset = dataset.map(build_medqa_prompts, desc="Cleaning MedQA")
         keep_columns = {"prompt_A", "prompt_B", "answer"}
         remove_columns = [name for name in dataset.column_names if name not in keep_columns]
         if remove_columns:
             dataset = dataset.remove_columns(remove_columns)
+        print("[MedQA] Cleaning complete", file=sys.stderr, flush=True)
         return dataset
