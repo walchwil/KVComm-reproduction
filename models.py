@@ -7,9 +7,10 @@ from transformers.generation.utils import GenerationMixin
 from transformers.cache_utils import DynamicCache, Cache
 from transformers.modeling_outputs import CausalLMOutputWithPast
 import logging
-from model_attn import LlamaAttentionTracer, Qwen2AttentionTracer, Gemma3AttentionTracer
+from model_attn import LlamaAttentionTracer, Qwen2AttentionTracer, Qwen3AttentionTracer, Gemma3AttentionTracer
 from transformers.models.llama.modeling_llama import LlamaAttention, LlamaModel, repeat_kv
 from transformers.models.qwen2.modeling_qwen2 import Qwen2Attention, Qwen2Model
+from transformers.models.qwen3.modeling_qwen3 import Qwen3Attention
 from transformers.models.gemma3.modeling_gemma3 import Gemma3Attention
 
 def get_layer_map(L_A, L_B):
@@ -79,6 +80,10 @@ class CVCommunicator(PreTrainedModel, GenerationMixin):
             dtype  = next(old.parameters()).dtype
             if type(old) is Qwen2Attention:
                 new = Qwen2AttentionTracer(old.config, old.layer_idx).to(device, dtype)
+                new.load_state_dict(old.state_dict(), strict=True)
+                block.self_attn = new
+            elif type(old) is Qwen3Attention:
+                new = Qwen3AttentionTracer(old.config, old.layer_idx).to(device, dtype)
                 new.load_state_dict(old.state_dict(), strict=True)
                 block.self_attn = new
             elif type(old) is LlamaAttention:
@@ -485,4 +490,3 @@ def forward_shift_back_qwen2(
         hidden_states=all_hidden_states,
         attentions=None,
     )
-
