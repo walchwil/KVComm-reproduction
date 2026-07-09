@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import logging
+import math
 
 def normalize(v, eps=1e-9):
     v = np.asarray(v, dtype=np.float32)
@@ -26,10 +27,17 @@ def calc_layer_importance(B_attn_weights: dict, model_A_name: str, layer_importa
 
 def get_top_layers(layer_importance_total: dict, cfg):
     topk_layers = get_layer_ranking(layer_importance_total, cfg)
-    cfg.layers_list = topk_layers[:int(cfg.top_layers * len(topk_layers))]
+    num_selected = get_num_selected_layers(cfg.top_layers, len(topk_layers))
+    cfg.layers_list = topk_layers[:num_selected]
     logging.info(f"Top {cfg.top_layers} from {len(topk_layers)} layers: {topk_layers}")
+    logging.info(f"Selected {num_selected} layers with ceil policy")
     logging.info(f"New layers list: {cfg.layers_list}")
     return cfg
+
+def get_num_selected_layers(top_layers: float, n_layers: int) -> int:
+    if top_layers <= 0:
+        return 0
+    return max(1, math.ceil(top_layers * n_layers))
 
 def get_layer_ranking(layer_importance_total: dict, cfg):
     importance = []

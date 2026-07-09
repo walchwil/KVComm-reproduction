@@ -8,6 +8,7 @@ from .twowikimqa import TwoWikiMQAEvaluator
 from .tmath import TMathEvaluator
 from .repobench import RepoBenchEvaluator
 from .samsum import SAMSumEvaluator
+from .medqa import MedQAEvaluator
 
 def get_evaluator(test_task: str):
     if test_task == "countries":
@@ -36,6 +37,8 @@ def get_evaluator(test_task: str):
         return RepoBenchEvaluator()
     elif test_task == "samsum":
         return SAMSumEvaluator()
+    elif test_task == "medqa":
+        return MedQAEvaluator()
     else:
         raise ValueError(f"Unsupported task name: {test_task}")
 

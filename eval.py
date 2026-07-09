@@ -45,11 +45,14 @@ def is_think_model(model):
     return False
 
 def apply_chat_template(evaluator, tokenizer, msg, model, context=False):
-    input_ids = tokenizer.apply_chat_template(
-        [{"role": "user", "content": msg}],
-        add_generation_prompt=True,
-        return_tensors="pt",
-    ).to(model.device)
+    if getattr(tokenizer, "chat_template", None) is not None:
+        input_ids = tokenizer.apply_chat_template(
+            [{"role": "user", "content": msg}],
+            add_generation_prompt=True,
+            return_tensors="pt",
+        ).to(model.device)
+    else:
+        input_ids = tokenizer(msg, return_tensors="pt").input_ids.to(model.device)
 
     if is_think_model(model):
         think_model_prefix = "</think>\n\n"
