@@ -15,12 +15,12 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 
-nltk.download('averaged_perceptron_tagger', quiet=True)
-nltk.download('punkt', quiet=True)
-nltk.download('wordnet', quiet=True)
-nltk.download('omw-1.4', quiet=True)
-nltk.download('punkt_tab', quiet=True)
-nltk.download('averaged_perceptron_tagger_eng', quiet=True)
+# nltk.download('averaged_perceptron_tagger', quiet=True)
+# nltk.download('punkt', quiet=True)
+# nltk.download('wordnet', quiet=True)
+# nltk.download('omw-1.4', quiet=True)
+# nltk.download('punkt_tab', quiet=True)
+# nltk.download('averaged_perceptron_tagger_eng', quiet=True)
 
 lemmatizer = WordNetLemmatizer()
 
@@ -185,30 +185,7 @@ def normalize_answer(text, lower=True):
         return preprocess(fix_answer(' '.join(text.split())))
 
 def lemmatize_text(text):
-    # Initialize lemmatizer
-
-    # Helper function to get POS tag for better lemmatization
-    def get_wordnet_pos(word):
-        """Map POS tag to first character lemmatize() accepts."""
-        tag = nltk.pos_tag([word])[0][1][0].upper()
-        tag_dict = {"J": wordnet.ADJ,  # Adjective
-                    "N": wordnet.NOUN,  # Noun
-                    "V": wordnet.VERB,  # Verb
-                    "R": wordnet.ADV}   # Adverb
-
-        return tag_dict.get(tag, wordnet.NOUN)  # Default to noun if unknown
-
-    # Tokenize the text
-    words = word_tokenize(text)
-
-    # Lemmatize each word
-    lemmatized_words = [lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in words]
-
-    # Join lemmatized words back into a sentence
-    lemmatized_sentence = ' '.join(lemmatized_words)
-
-    return lemmatized_sentence
-
+    return text
 def calculate_f1_score_with_precision(str1, str2):
     # Split the strings into sets of words
     str1 = fix_answer(contractions.fix(normalize_answer(str1)))

@@ -47,10 +47,18 @@ def get_layer_ranking(layer_importance_total: dict, cfg):
         importance.append(np.mean(layer_importance_total[i]))
     
     importance = normalize(importance)
+    raw_importance = importance.copy()
     mu = cfg.mu * (n_layers - 1)
     gaussian = gaussian_prior(n_layers, mu=mu, sigma=cfg.sigma)
     gaussian = normalize(gaussian)
     importance = cfg.alpha * importance + (1.0 - cfg.alpha) * gaussian
+    for i in range(n_layers):
+        print(
+        f"[LayerScore] layer={i:02d} "
+        f"raw={raw_importance[i]:.6f} "
+        f"gaussian={gaussian[i]:.6f} "
+        f"final={importance[i]:.6f}"
+        )
 
     top_layers = np.argsort(importance)[::-1]
     logging.info(f"Layer ranking: {top_layers}")
