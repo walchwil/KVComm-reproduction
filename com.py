@@ -110,7 +110,11 @@ def main(cfg: AlignConfig):
         tokenizer.pad_token = tokenizer.eos_token
 
     model_A = AutoModelForCausalLM.from_pretrained(cfg.model_A, device_map={"": cfg.device}, torch_dtype=torch.bfloat16, attn_implementation="sdpa")
-    model_B = AutoModelForCausalLM.from_pretrained(cfg.model_B, device_map={"": cfg.device}, torch_dtype=torch.bfloat16, attn_implementation="sdpa")
+    if cfg.model_A == cfg.model_B and os.environ.get("KVCOMM_SHARE_SAME_MODEL", "0") == "1":
+        print("[KVComm] Reusing model_A as model_B because model paths are identical.", flush=True)
+        model_B = model_A
+    else:
+        model_B = AutoModelForCausalLM.from_pretrained(cfg.model_B, device_map={"": cfg.device}, torch_dtype=torch.bfloat16, attn_implementation="sdpa")
     model_A.eval()
     model_B.eval()
 

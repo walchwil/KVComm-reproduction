@@ -1,4 +1,7 @@
+from .latentmas_tasks import LatentMASTaskEvaluator
 def get_evaluator(test_task: str):
+    if test_task in {"arc_easy", "arc_challenge", "humanevalplus", "mbppplus", "gpqa", "aime2024", "aime2025"}:
+        return LatentMASTaskEvaluator(test_task)
     if test_task == "countries":
         from .countries import CountriesEvaluator
         return CountriesEvaluator()
