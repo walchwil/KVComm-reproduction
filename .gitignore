@@ -218,3 +218,17 @@ slurms*/
 *.pdf
 *.out
 *.err
+# local data
+data/
+medqa.json
+
+# experiment outputs
+logs/
+snapshots/
+wandb/
+
+# backups
+*.bak
+*.bak_*
+*.pyc
+__pycache__/
