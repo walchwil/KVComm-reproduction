@@ -1,0 +1,17 @@
+.git
+
+__pycache__
+*.pyc
+
+checkpoints/
+outputs/
+logs/
+
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+hf_cache/
+
+wandb/
